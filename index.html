@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShareMe — Effortless Sharing</title>
+    <title>ShareMe — Live Multi-User Simulation</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,6 +13,14 @@
 
     <div class="device-frame">
         <div class="notch"></div>
+        
+        <div id="demo-sandbox-panel" class="demo-sandbox-bar hidden">
+            <span class="sandbox-label">👁️ Viewing App As:</span>
+            <select id="sandbox-user-selector" onchange="handleSandboxUserSwitch(this.value)">
+                </select>
+            <button class="reset-db-btn" onclick="resetSimulationData()">Reset Database</button>
+        </div>
+
         <div class="app-container">
 
             <div id="toast-notification" class="toast-notification hidden">
@@ -112,7 +120,7 @@
                     <div class="karma-badge-pill" onclick="showKarmaDetails()">
                         <span class="karma-star">★</span>
                         <span id="karma-count">0</span>
-                        <span class="karma-tier">Trust Token</span>
+                        <span class="karma-tier">Karma</span>
                     </div>
                 </header>
 
@@ -132,7 +140,7 @@
                         </div>
                         <div class="metric-card highlight">
                             <span class="m-val" id="metric-borrowed">0</span>
-                            <span class="m-lbl">Your Active Assets</span>
+                            <span class="m-lbl">Possessed By You</span>
                         </div>
                     </div>
 
@@ -204,7 +212,7 @@
                     </div>
 
                     <div class="karma-incentive-notice" style="background: rgba(0, 122, 255, 0.06); color: #007AFF; border: 1px solid rgba(0, 122, 255, 0.15); padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 16px;">
-                        ⚡ Registering an item generates <strong style="font-weight:700;">+5 Karma Points</strong> upon storage compilation.
+                        ⚡ Registering an item generates <strong>+5 Karma Points</strong> upon storage compilation.
                     </div>
 
                     <button class="btn btn-primary" style="margin-top:24px;" onclick="submitNewAsset()">Publish Inventory Entry</button>
