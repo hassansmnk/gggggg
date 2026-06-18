@@ -1,226 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ShareMe — Live Multi-User Simulation</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShareMe - Peer-to-Peer Resource Sharing</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="demo-sandbox-panel" class="demo-sandbox-bar hidden">
-        <span class="sandbox-label">👁️ Viewing App As:</span>
-        <select id="sandbox-user-selector" onchange="handleSandboxUserSwitch(this.value)">
-            </select>
-        <button class="reset-db-btn" onclick="resetSimulationData()">Reset Database</button>
+  <div class="dev-console">
+    <strong>Dev Console</strong>
+    <div class="dev-controls">
+      <label for="user-switcher">Active User:</label>
+      <select id="user-switcher">
+        <option value="u1">Ahmed</option>
+        <option value="u2">Sara</option>
+        <option value="u3">Tareq</option>
+      </select>
     </div>
+    <button id="reset-db" class="dev-btn">Reset Database</button>
+  </div>
 
-    <div class="device-frame">
-        <div class="notch"></div>
+  <div class="device-mockup">
+    <div class="device-notch"></div>
+    <div id="toast-container"></div>
 
-        <div class="app-container">
-
-            <div id="toast-notification" class="toast-notification hidden">
-                <div class="toast-icon" id="toast-icon"></div>
-                <div class="toast-content">
-                    <p class="toast-title" id="toast-title">Notification</p>
-                    <p class="toast-body" id="toast-body">Message contents...</p>
-                </div>
-            </div>
-
-            <section id="splash-screen" class="view active">
-                <div class="floating-assets-container">
-                    <svg class="floating-svg s1" width="32" height="32" viewBox="0 0 24 24"><path d="M7 18c-2.76 0-5-2.24-5-5s2.24-5 5-5c1.99 0 3.71 1.16 4.54 2.84L18 10.83V13h2v2h2v2h-4v-2.17l-4.46-4.46C12.71 16.84 10.99 18 7 18zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                    <svg class="floating-svg s2" width="32" height="32" viewBox="0 0 24 24"><path d="M19 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h4l3 3 3-3h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-6 16l-3-3h3v-3h2v3h3l-3 3zm5-8H6V6h12v4z"/></svg>
-                    <svg class="floating-svg s3" width="32" height="32" viewBox="0 0 24 24"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm14-8.5c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm-8.2-6l-2-3.4H6V7h3.6l1.8 3.1 3.5-6.1h2.7l-4.8 8.5H10.8z"/></svg>
-                </div>
-                <div class="splash-hero">
-                    <div class="logo-mark"><span class="logo-dot"></span></div>
-                    <h1>ShareMe</h1>
-                    <p class="tagline">Everyday items, effortlessly shared.</p>
-                </div>
-                <button class="btn btn-primary" onclick="navigateTo('onboarding')">Get Started</button>
-            </section>
-
-            <section id="onboarding" class="view">
-                <div class="onboarding-flow" data-step="1" id="onboarding-flow">
-                    
-                    <div class="onboarding-step" id="step-1">
-                        <h2>Create Your Account</h2>
-                        <p class="subtitle">Join your hyper-local sharing network to access community assets.</p>
-                        <div class="auth-group">
-                            <div class="input-field">
-                                <label>Email Address</label>
-                                <input type="email" placeholder="name@domain.com" id="ob-email">
-                            </div>
-                            <div class="input-field">
-                                <label>Secure Password</label>
-                                <input type="password" placeholder="••••••••" id="ob-pass">
-                            </div>
-                            <button class="btn btn-primary" onclick="nextOnboardingStep()">Register & Continue</button>
-                            <div class="divider"><span>or register with credentials via</span></div>
-                            <div style="display: flex; gap: 12px;">
-                                <button class="btn btn-oauth" onclick="simulateOAuth('Google')">Google</button>
-                                <button class="btn btn-oauth" onclick="simulateOAuth('Apple')">Apple</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="onboarding-step" id="step-2">
-                        <h2>Profile Parameters</h2>
-                        <p class="subtitle">This configuration layer authenticates trust inside your active circles.</p>
-                        <div class="avatar-uploader" onclick="simulateAvatarUpload()">
-                            <div class="avatar-preview" id="avatar-preview">??</div>
-                            <div class="upload-badge">+</div>
-                        </div>
-                        <div class="input-field">
-                            <label>Full Display Name</label>
-                            <input type="text" id="ob-name" placeholder="Ahmed Nour">
-                        </div>
-                        <button class="btn btn-primary" onclick="nextOnboardingStep()">Save & Continue</button>
-                    </div>
-
-                    <div class="onboarding-step" id="step-3">
-                        <h2>Synchronize Networks</h2>
-                        <p class="subtitle">Select your baseline perimeter layout node.</p>
-                        <div class="circle-options">
-                            <div class="circle-card active" onclick="toggleCircleOption(this)" data-circle-type="family">
-                                <div class="circle-card-icon">🏠</div>
-                                <div>
-                                    <h4>Family Circle</h4>
-                                    <p>Share high-value assets securely with family members.</p>
-                                </div>
-                            </div>
-                            <div class="circle-card" onclick="toggleCircleOption(this)" data-circle-type="neighbor">
-                                <div class="circle-card-icon">🌳</div>
-                                <div>
-                                    <h4>Neighbor Circle</h4>
-                                    <p>Connect with local verified community members nearby.</p>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" onclick="completeOnboarding()">Verify Identity Keys</button>
-                    </div>
-
-                </div>
-            </section>
-
-            <section id="dashboard" class="view">
-                <header class="app-header">
-                    <div class="user-profile">
-                        <div class="user-avatar" id="dash-avatar">--</div>
-                        <div>
-                            <h3 id="dash-greeting">Loading Identity Engine...</h3>
-                            <p class="subtext" id="active-circle-context">Family Circle</p>
-                        </div>
-                    </div>
-                    <div class="karma-badge-pill" onclick="showKarmaDetails()">
-                        <span class="karma-star">★</span>
-                        <span id="karma-count">0</span>
-                        <span class="karma-tier">Karma</span>
-                    </div>
-                </header>
-
-                <div class="segmented-control-wrapper">
-                    <div class="segmented-control">
-                        <button class="segment-btn active" data-circle="family" onclick="switchCircle('family')">Family</button>
-                        <button class="segment-btn" data-circle="neighbor" onclick="switchCircle('neighbor')">Neighbors</button>
-                        <div class="sliding-indicator"></div>
-                    </div>
-                </div>
-
-                <div class="dashboard-scroll-feed">
-                    <div class="metrics-grid">
-                        <div class="metric-card">
-                            <span class="m-val" id="metric-avail">0</span>
-                            <span class="m-lbl">Available Now</span>
-                        </div>
-                        <div class="metric-card highlight">
-                            <span class="m-val" id="metric-borrowed">0</span>
-                            <span class="m-lbl">Possessed By You</span>
-                        </div>
-                    </div>
-
-                    <h4 class="section-title">Shared Inventory Matrix</h4>
-                    <div class="items-grid" id="items-container">
-                        </div>
-                </div>
-
-                <nav class="bottom-tab-bar">
-                    <button class="tab-item active" onclick="switchTab('home')">
-                        <svg class="tab-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                        <span>Home</span>
-                    </button>
-                    <button class="tab-item action-fab" onclick="openAddAssetModal()">
-                        <div class="fab-inner">+</div>
-                    </button>
-                    <button class="tab-item" onclick="toggleNotificationCenter()">
-                        <svg class="tab-icon" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                        <span>Alerts</span>
-                    </button>
-                </nav>
-            </section>
-
-            <div id="item-detail-sheet" class="bottom-sheet">
-                <div class="sheet-backdrop" onclick="closeBottomSheet()"></div>
-                <div class="sheet-content">
-                    <div class="drag-handle"></div>
-                    <div class="sheet-body-scroll" id="sheet-detail-render">
-                        </div>
-                </div>
-            </div>
-
-            <div id="add-asset-modal" class="fullscreen-modal">
-                <div class="modal-header">
-                    <h3>Register New Asset</h3>
-                    <button class="close-modal-btn" onclick="closeAddAssetModal()">✕</button>
-                </div>
-                <div class="modal-body">
-                    <div class="photo-dropzone" onclick="simulatePhotoCapture()">
-                        <div id="dropzone-placeholder">
-                            <span class="camera-icon">📷</span>
-                            <p>Upload System Asset Photo</p>
-                        </div>
-                        <div id="dropzone-preview" class="hidden"></div>
-                    </div>
-
-                    <div class="input-field">
-                        <label>Item Nominal Identity</label>
-                        <input type="text" id="new-item-name" placeholder="e.g., Makita Cordless Grinder">
-                    </div>
-
-                    <div class="input-field">
-                        <label>Category Layout Node</label>
-                        <select id="new-item-category">
-                            <option value="Tools">Tools</option>
-                            <option value="Vehicles">Vehicles</option>
-                            <option value="Electronics">Electronics</option>
-                            <option value="Outdoor">Outdoor</option>
-                            <option value="Home">Home</option>
-                        </select>
-                    </div>
-
-                    <div class="input-field">
-                        <label>Target Execution Circle</label>
-                        <select id="new-item-circle">
-                            <option value="family">Family Circle (Private Cluster)</option>
-                            <option value="neighbor">Neighbor Circle (Local Hub Node)</option>
-                        </select>
-                    </div>
-
-                    <div class="karma-incentive-notice">
-                        ⚡ Registering an item generates <strong>+5 Karma Points</strong> upon storage compilation.
-                    </div>
-
-                    <button class="btn btn-primary" style="margin-top:24px;" onclick="submitNewAsset()">Publish Inventory Entry</button>
-                </div>
-            </div>
-
+    <main class="app-view" id="app-view">
+      
+      <header class="app-header">
+        <div class="header-content">
+          <div class="avatar" id="user-avatar">A</div>
+          <div class="greeting-node">
+            <span class="greeting-sub">Good morning,</span>
+            <h1 class="greeting-name" id="user-name">Ahmed</h1>
+          </div>
         </div>
+        <div class="trust-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--accent)">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+          <span id="user-karma" class="karma-tally">120</span>
+        </div>
+      </header>
+
+      <section class="category-track">
+        <div class="category-scroll" id="category-scroll">
+          <button class="cat-pill active" data-cat="All">
+            <div class="cat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </div>
+            All
+          </button>
+          <button class="cat-pill" data-cat="Tools">
+            <div class="cat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            Tools
+          </button>
+          <button class="cat-pill" data-cat="Electronics">
+            <div class="cat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/></svg>
+            </div>
+            Tech
+          </button>
+          <button class="cat-pill" data-cat="Leisure">
+            <div class="cat-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+            </div>
+            Leisure
+          </button>
+        </div>
+      </section>
+
+      <section class="segmented-control-container">
+        <div class="segmented-control">
+          <div class="segment-bg" id="segment-bg"></div>
+          <button class="segment-btn active" data-tab="explore">Explore</button>
+          <button class="segment-btn" data-tab="mine">My Items</button>
+          <button class="segment-btn" data-tab="borrowed">Borrowing</button>
+        </div>
+      </section>
+
+      <section class="inventory-grid" id="inventory-grid">
+        </section>
+
+    </main>
+
+    <button class="fab" id="fab-add">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+
+    <div class="overlay hidden" id="sheet-overlay">
+      <div class="bottom-sheet" id="bottom-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-content" id="sheet-content">
+          </div>
+      </div>
     </div>
 
+    <div class="modal hidden" id="add-modal">
+      <div class="modal-header">
+        <h2>Share New Item</h2>
+        <button class="close-btn" id="close-modal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form class="modal-body" id="add-item-form">
+        <div class="input-group">
+          <label for="item-name">Item Name</label>
+          <input type="text" id="item-name" placeholder="e.g. Sony Alpha Camera" required autocomplete="off">
+        </div>
+        <div class="input-group">
+          <label for="item-category">Category</label>
+          <select id="item-category" required>
+            <option value="Tools">Tools</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Leisure">Leisure</option>
+            <option value="Vehicles">Vehicles</option>
+          </select>
+        </div>
+        <div class="modal-reward">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--accent)"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <span>Adding this item will reward you with <strong>+5 Karma</strong>.</span>
+        </div>
+        <button type="submit" class="btn-primary">Add to Inventory</button>
+      </form>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
