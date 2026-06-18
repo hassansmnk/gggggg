@@ -1,13 +1,11 @@
 // Baseline structural database state definition
 const DEFAULT_INITIAL_STATE = {
     activeCircle: "family",
-    // Track active registered users in the network layer simulation context
     users: {
         "usr-ahmed": { id: "usr-ahmed", name: "Ahmed Nour", email: "ahmed@shareme.io", karma: 15, avatar: "AN" },
         "usr-sara": { id: "usr-sara", name: "Sara Nour", email: "sara@shareme.io", karma: 45, avatar: "SN" },
         "usr-tareq": { id: "usr-tareq", name: "Tareq Node", email: "tareq@shareme.io", karma: 80, avatar: "TN" }
     },
-    // The currently active logged-in scope parameter identity
     currentUserId: "usr-ahmed", 
     inventory: [
         {
@@ -15,11 +13,11 @@ const DEFAULT_INITIAL_STATE = {
             name: "Toyota Camry",
             category: "Vehicles",
             circle: "family",
-            status: "busy", // [avail, busy, requested]
+            status: "busy", 
             owner: "usr-sara", 
             holder: "usr-ahmed",
             returnTime: "6:30 PM",
-            imageGradient: "linear-gradient(135deg, #FF9500, #FF5E3A)",
+            imageGradient: "linear-gradient(135deg, #DECCA6, #A3967F)",
             fuel: 82, range: 520, odometer: 182541,
             history: [{ time: "9:15 AM", user: "Ahmed Nour", type: "borrowed", log: "Lease contract checked out." }]
         },
@@ -32,7 +30,7 @@ const DEFAULT_INITIAL_STATE = {
             owner: "usr-ahmed", 
             holder: "None",
             returnTime: "",
-            imageGradient: "linear-gradient(135deg, #1C1C1E, #48484A)",
+            imageGradient: "linear-gradient(135deg, #4E5340, #383B2E)",
             history: []
         },
         {
@@ -44,16 +42,14 @@ const DEFAULT_INITIAL_STATE = {
             owner: "usr-tareq", 
             holder: "None",
             returnTime: "",
-            imageGradient: "linear-gradient(135deg, #11998E, #38EF7D)",
+            imageGradient: "linear-gradient(135deg, #7A8464, #525943)",
             history: [{ time: "Last Week", user: "Tareq Node", type: "returned", log: "Blades wiped clean, tank full." }]
         }
     ]
 };
 
-// Global application runtime runtime variable pointer
 let appState = {};
 
-// Load application state matrix directly from persistent local storage
 function loadStateFromStorage() {
     const saved = localStorage.getItem("shareme_live_db");
     if (saved) {
@@ -67,25 +63,20 @@ function loadStateFromStorage() {
     }
 }
 
-// Write runtime variable state array directly into client storage blocks
 function saveStateToStorage() {
     localStorage.setItem("shareme_live_db", JSON.stringify(appState));
 }
 
-// Reset operations engine cleanly
 function resetSimulationData() {
     localStorage.removeItem("shareme_live_db");
+    localStorage.removeItem("shareme_onboarding_passed");
     loadStateFromStorage();
-    syncSandboxToolbar();
-    switchCircle(appState.activeCircle);
-    triggerToast("🔄 Database Reset", "Storage recompiled to baseline default nodes.");
+    window.location.reload();
 }
 
-// Onboot Core Initialization Routing Entry Point
 document.addEventListener("DOMContentLoaded", () => {
     loadStateFromStorage();
     
-    // Check if user has already bypassed onboarding phase historically
     if(localStorage.getItem("shareme_onboarding_passed") === "true") {
         syncSandboxToolbar();
         const activeUser = appState.users[appState.currentUserId];
@@ -98,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Sync Sandbox profile selection controller drop down list elements
 function syncSandboxToolbar() {
     const bar = document.getElementById("demo-sandbox-panel");
     const selector = document.getElementById("sandbox-user-selector");
@@ -111,13 +101,12 @@ function syncSandboxToolbar() {
         const u = appState.users[uid];
         const opt = document.createElement("option");
         opt.value = uid;
-        opt.innerText = `${u.name} (${uid === appState.currentUserId ? 'Active Client' : 'Remote Member'})`;
+        opt.innerText = `${u.name} (${uid === appState.currentUserId ? 'You' : 'Remote Member'})`;
         if(uid === appState.currentUserId) opt.selected = true;
         selector.appendChild(opt);
     });
 }
 
-// Handle multi-profile data re-rendering context adjustments
 function handleSandboxUserSwitch(targetUserId) {
     appState.currentUserId = targetUserId;
     saveStateToStorage();
@@ -131,7 +120,7 @@ function handleSandboxUserSwitch(targetUserId) {
     renderInventoryGrid();
     updateDashboardMetrics();
     
-    triggerToast(`👤 Identity Context: ${u.name}`, `Viewing synchronized catalog relative to individual user security coordinates.`);
+    triggerToast(`👤 Switched Identity: ${u.name}`, `Now viewing workspace parameters from this profile perspective.`);
 }
 
 function navigateTo(viewId) {
@@ -143,7 +132,7 @@ function navigateTo(viewId) {
 function simulateOAuth(platform) {
     document.getElementById("ob-email").value = `${platform.toLowerCase()}.user@shareme.io`;
     document.getElementById("ob-pass").value = "••••••••••••";
-    triggerToast("Identity Synchronized", `Pulled records from ${platform}.`);
+    triggerToast("Identity Synchronized", `Pulled records securely via ${platform}.`);
 }
 
 function nextOnboardingStep() {
@@ -153,14 +142,14 @@ function nextOnboardingStep() {
     if (currentStep === 1) {
         const emailVal = document.getElementById("ob-email").value;
         const passVal = document.getElementById("ob-pass").value;
-        if(!emailVal || !passVal) { alert("Credentials validation mismatch parameters."); return; }
+        if(!emailVal || !passVal) { alert("Please complete required credentials inputs."); return; }
         
         appState.users["usr-ahmed"].email = emailVal;
         appState.users["usr-ahmed"].name = emailVal.split('@')[0];
         document.getElementById("ob-name").value = appState.users["usr-ahmed"].name.toUpperCase();
     } else if (currentStep === 2) {
         const nameVal = document.getElementById("ob-name").value;
-        if(!nameVal) { alert("Please specify name."); return; }
+        if(!nameVal) { alert("Please specify user display name descriptor."); return; }
         
         appState.users["usr-ahmed"].name = nameVal;
         appState.users["usr-ahmed"].avatar = nameVal.split(' ').map(n => n[0]).join('').toUpperCase().substring(0,2);
@@ -188,7 +177,7 @@ function completeOnboarding() {
 
 function simulateAvatarUpload() {
     const preview = document.getElementById("avatar-preview");
-    preview.style.background = "linear-gradient(135deg, #007AFF, #0051A8)";
+    preview.style.background = "var(--accent-blue)";
     preview.style.color = "#FFFFFF";
     preview.innerText = "✓";
 }
@@ -246,36 +235,35 @@ function renderInventoryGrid() {
         card.onclick = () => openItemDetailSheet(item.id);
         
         const isOwner = (item.owner === appState.currentUserId);
-        const ownershipBadge = isOwner ? `<span class="owner-badge-node" style="background: rgba(0,0,0,0.06); font-size:9px; padding:2px 6px; border-radius:4px; font-weight:600; text-transform:uppercase; color:#555;">You Own This</span>` : "";
+        const ownershipBadge = isOwner ? `<span style="background: rgba(0,0,0,0.05); font-size:9px; padding:2px 6px; border-radius:4px; font-weight:600; text-transform:uppercase; color:#555;">Your Asset</span>` : "";
 
         let statusBadge = "";
         let contextLine = "";
-
         const holderName = appState.users[item.holder] ? appState.users[item.holder].name : "Unknown User";
 
         if (item.status === "avail") {
             statusBadge = `<div class="status-indicator-pill avail">🟢 Available</div>`;
-            contextLine = `Ready for instant deployment`;
+            contextLine = `Ready for deployment`;
         } else if (item.status === "requested") {
             statusBadge = `<div class="status-indicator-pill busy" style="background:rgba(255,149,0,0.1); color:#FF9500;">⏳ Requested</div>`;
-            contextLine = `Awaiting authorization keys from owner`;
+            contextLine = `Awaiting authorization keys`;
         } else {
             const displayHolder = (item.holder === appState.currentUserId) ? "You" : holderName;
             statusBadge = `<div class="status-indicator-pill busy">🔴 Borrowed</div>`;
-            contextLine = `Possessed by ${displayHolder} • Return: ${item.returnTime || 'Indefinite'}`;
+            contextLine = `Possessed by ${displayHolder}`;
         }
 
         card.innerHTML = `
             <div class="item-card-image-wrap">
-                <div class="fallback-gradient-avatar" style="background: ${item.imageGradient}; height:100%; width:100%; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px;">📦</div>
+                <div style="background: ${item.imageGradient}; height:100%; width:100%; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px;">📦</div>
             </div>
-            <div class="item-card-details" style="padding-top:10px;">
-                <div class="item-title-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <div class="item-card-details">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                     <h5 style="margin:0; font-size:14px; font-weight:600; flex:1;">${item.name}</h5>
                     ${statusBadge}
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
-                    <span class="holder-meta-row" style="font-size:12px; opacity:0.6;">${contextLine}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                    <span style="font-size:12px; opacity:0.6;">${contextLine}</span>
                     ${ownershipBadge}
                 </div>
             </div>
@@ -298,37 +286,37 @@ function openItemDetailSheet(itemId) {
     
     if(isOwner) {
         administrativeControlHTML = `
-            <div class="owner-control-panel-row" style="display:flex; gap:10px; margin-bottom:20px; padding:12px; background:rgba(0,0,0,0.02); border-radius:8px; border:1px dashed rgba(0,0,0,0.08);">
-                <button class="btn" style="flex:1; font-size:12px; background:#fff; border:1px solid #ddd;" onclick="executeEditAsset('${item.id}')">✏️ Modify Specs</button>
-                <button class="btn" style="flex:1; font-size:12px; background:rgba(255,59,48,0.08); color:#FF3B30; border:1px solid rgba(255,59,48,0.15);" onclick="executeDeleteAsset('${item.id}')">🗑️ Delete Asset</button>
+            <div style="display:flex; gap:10px; margin-bottom:20px; padding:12px; background:rgba(0,0,0,0.02); border-radius:8px; border:1px dashed rgba(0,0,0,0.08);">
+                <button class="btn" style="flex:1; font-size:12px; background:#fff; border:1px solid #ddd; padding:8px;" onclick="executeEditAsset('${item.id}')">✏️ Modify</button>
+                <button class="btn" style="flex:1; font-size:12px; background:rgba(255,59,48,0.08); color:#FF3B30; border:1px solid rgba(255,59,48,0.15); padding:8px;" onclick="executeDeleteAsset('${item.id}')">🗑️ Delete</button>
             </div>
         `;
 
         if(item.status === 'requested') {
             actionExecutionHTML = `
                 <div style="background:rgba(255,149,0,0.05); padding:16px; border-radius:12px; border:1px solid rgba(255,149,0,0.2); text-align:center;">
-                    <p style="margin:0 0 12px 0; font-size:13px; font-weight:500;"><strong>${holderName}</strong> has triggered a borrow request flag.</p>
-                    <button class="btn btn-primary" onclick="executeAcceptRequest('${item.id}')">Accept & Share Asset (+5 Karma)</button>
+                    <p style="margin:0 0 12px 0; font-size:13px; font-weight:500;"><strong>${holderName}</strong> signature requested asset deployment.</p>
+                    <button class="btn btn-primary" onclick="executeAcceptRequest('${item.id}')">Approve & Hand Over Over (+5 Karma)</button>
                 </div>
             `;
         } else if (item.status === 'busy') {
-            actionExecutionHTML = `<button class="btn btn-primary" style="opacity:0.6; pointer-events:none;">Currently deployed with ${holderName}</button>`;
+            actionExecutionHTML = `<button class="btn btn-primary" style="opacity:0.6; pointer-events:none;">Currently possessed by ${holderName}</button>`;
         } else {
-            actionExecutionHTML = `<div style="text-align:center; padding:10px; font-size:12px; opacity:0.6; font-style:italic;">Asset cataloged. Awaiting incoming access requests.</div>`;
+            actionExecutionHTML = `<div style="text-align:center; padding:10px; font-size:12px; opacity:0.6; font-style:italic;">Asset secure. Awaiting access requests.</div>`;
         }
     } else {
         if(item.status === 'avail') {
-            actionExecutionHTML = `<button class="btn btn-primary" onclick="executeSendRequest('${item.id}')">Request Access Credentials</button>`;
+            actionExecutionHTML = `<button class="btn btn-primary" onclick="executeSendRequest('${item.id}')">Trigger Access Borrow Request</button>`;
         } else if(item.status === 'requested') {
             if(item.holder === appState.currentUserId) {
-                actionExecutionHTML = `<button class="btn btn-primary" style="background:#8E8E93; opacity:0.6; pointer-events:none;">Your request is pending owner signature...</button>`;
+                actionExecutionHTML = `<button class="btn btn-primary" style="background:#8E8E93; opacity:0.6; pointer-events:none;">Request pending owner authentication...</button>`;
             } else {
-                actionExecutionHTML = `<button class="btn btn-primary" style="opacity:0.4; pointer-events:none;">Unavailable • Requested by another member</button>`;
+                actionExecutionHTML = `<button class="btn btn-primary" style="opacity:0.4; pointer-events:none;">Unavailable • Requested by another account</button>`;
             }
         } else if(item.status === 'busy' && item.holder === appState.currentUserId) {
-            actionExecutionHTML = `<button class="btn btn-primary" style="background:#34C759;" onclick="executeReturnAssetFlow('${item.id}')">Confirm Asset Return (+8 Karma)</button>`;
+            actionExecutionHTML = `<button class="btn btn-primary" style="background:#34C759;" onclick="executeReturnAssetFlow('${item.id}')">Signal Returned Asset Reconcile (+8 Karma)</button>`;
         } else {
-            actionExecutionHTML = `<button class="btn btn-primary" style="opacity:0.4; pointer-events:none;">Unavailable • Checked out by ${holderName}</button>`;
+            actionExecutionHTML = `<button class="btn btn-primary" style="opacity:0.4; pointer-events:none;">Unavailable • Deployed with ${holderName}</button>`;
         }
     }
 
@@ -339,14 +327,14 @@ function openItemDetailSheet(itemId) {
         
         ${administrativeControlHTML}
 
-        <h4 class="section-title" style="margin:16px 0 8px 0; font-size:12px; text-transform:uppercase; letter-spacing:0.5px; opacity:0.4;">Historical Asset Logs</h4>
-        <div class="timeline-module" style="border-left:2px solid #eee; padding-left:12px; margin-bottom:24px;">
+        <h4 class="section-title" style="margin:16px 0 8px 0; font-size:11px;">System Event Log Nodes</h4>
+        <div style="border-left:2px solid #E2E0D8; padding-left:12px; margin-bottom:24px;">
             ${item.history && item.history.length > 0 ? item.history.map(h => `
                 <div style="margin-bottom:8px; font-size:12px;">
                     <span style="opacity:0.4; margin-right:6px;">${h.time}</span>
                     <strong>${h.user}:</strong> <span style="opacity:0.8;">${h.log}</span>
                 </div>
-            `).join('') : '<p style="font-size:12px; opacity:0.4; font-style:italic; margin:0;">No verified system logs yet.</p>'}
+            `).join('') : '<p style="font-size:12px; opacity:0.4; font-style:italic; margin:0;">No verified state historical adjustments.</p>'}
         </div>
 
         <div style="margin-top:20px;">
@@ -370,7 +358,7 @@ function executeSendRequest(itemId) {
     closeBottomSheet();
     renderInventoryGrid();
     updateDashboardMetrics();
-    triggerToast("📡 Request Dispatched", "Asset credentials queued for owner verification.");
+    triggerToast("📡 Request Dispatched", "Asset access token dispatched into sync pipeline.");
 }
 
 function executeAcceptRequest(itemId) {
@@ -378,12 +366,12 @@ function executeAcceptRequest(itemId) {
     item.status = 'busy';
     item.returnTime = "Indefinite";
     
-    const receiver = appState.users[item.holder] ? appState.users[item.holder].name : "Network User";
+    const receiver = appState.users[item.holder] ? appState.users[item.holder].name : "Network Profile";
     item.history.unshift({
         time: "Just Now",
         user: appState.users[appState.currentUserId].name,
         type: "approval",
-        log: `Granted share authorization lease to ${receiver}.`
+        log: `Granted share authorization lease contract to ${receiver}.`
     });
     
     adjustKarma(5, "Share Request Authorized");
@@ -398,10 +386,10 @@ function executeReturnAssetFlow(itemId) {
     const detailRenderContainer = document.getElementById("sheet-detail-render");
     
     detailRenderContainer.innerHTML = `
-        <h2 style="font-size:18px; margin-bottom:6px;">Confirm Return Condition</h2>
-        <p class="subtitle" style="font-size:13px; opacity:0.6; margin-bottom:20px;">Is the item clean and functional?</p>
-        <button class="btn btn-primary" style="background:#34C759; margin-bottom:10px;" onclick="finalizeReturnProcess('${item.id}', true)">Yes, Returned in Pristine Condition (+8 Karma)</button>
-        <button class="btn" style="background:rgba(0,0,0,0.05); width:100%; border:1px solid #ddd;" onclick="finalizeReturnProcess('${item.id}', false)">Returned (Requires Review)</button>
+        <h2 style="font-size:18px; margin-bottom:6px;">Confirm Return Security</h2>
+        <p class="subtitle" style="font-size:13px; opacity:0.6; margin-bottom:20px;">Confirm item deployment state condition check.</p>
+        <button class="btn btn-primary" style="background:#34C759; margin-bottom:10px;" onclick="finalizeReturnProcess('${item.id}', true)">Pristine Secure Return (+8 Karma)</button>
+        <button class="btn" style="background:rgba(0,0,0,0.05); width:100%; border:1px solid #ddd;" onclick="finalizeReturnProcess('${item.id}', false)">Flag Variance Exception</button>
     `;
 }
 
@@ -416,13 +404,13 @@ function finalizeReturnProcess(itemId, inGoodCondition) {
         time: "Just Now",
         user: previousBorrowerName,
         type: "returned",
-        log: `Returned to source inventory node. Status condition: ${inGoodCondition ? 'Pristine' : 'Damaged/Review Notice'}`
+        log: `Recompiled back to pool inventory. Condition state: ${inGoodCondition ? 'Pristine' : 'Requires Maintenance Review'}`
     });
     
     if(inGoodCondition) {
         adjustKarma(8, "Pristine Asset Reconciled");
     } else {
-        triggerToast("Asset Returned", "Returned. processing flags.");
+        triggerToast("Asset Logged", "Item returned with discrepancy flags.");
     }
     
     saveStateToStorage();
@@ -437,18 +425,18 @@ function executeDeleteAsset(itemId) {
     closeBottomSheet();
     renderInventoryGrid();
     updateDashboardMetrics();
-    triggerToast("🗑️ Entry Purged", "Asset deleted from repository index.");
+    triggerToast("🗑️ Entry Purged", "Asset deleted from network repository indices.");
 }
 
 function executeEditAsset(itemId) {
     const item = appState.inventory.find(i => i.id === itemId);
-    const updateTitle = prompt("Modify Asset Name Descriptor:", item.name);
+    const updateTitle = prompt("Modify Asset Descriptor Name Title:", item.name);
     if(updateTitle && updateTitle.trim() !== "") {
         item.name = updateTitle.trim();
         saveStateToStorage();
         closeBottomSheet();
         renderInventoryGrid();
-        triggerToast("✏️ Specs Modified", "Internal catalog tracking updated.");
+        triggerToast("✏️ Parameters Modified", "Internal global database metadata updated.");
     }
 }
 
@@ -469,8 +457,8 @@ function simulatePhotoCapture() {
     if(placeholder && preview) {
         placeholder.classList.add("hidden");
         preview.classList.remove("hidden");
-        preview.style.background = "linear-gradient(135deg, #A8BFFF, #8843F2)";
-        preview.style.width = "100%"; preview.style.height = "100%";
+        preview.style.background = "linear-gradient(135deg, #A3967F, #525943)";
+        preview.style.width = "100%"; preview.style.height = "100%"; preview.style.borderRadius = "10px";
     }
 }
 
@@ -479,7 +467,7 @@ function submitNewAsset() {
     const category = document.getElementById("new-item-category").value;
     const circle = document.getElementById("new-item-circle").value;
     
-    if(!name) { alert("Please provide an entry descriptor."); return; }
+    if(!name) { alert("Please compile identification description text."); return; }
     
     const generatedRecord = {
         id: "custom-" + Date.now(),
@@ -490,12 +478,12 @@ function submitNewAsset() {
         owner: appState.currentUserId, 
         holder: "None",
         returnTime: "",
-        imageGradient: "linear-gradient(135deg, #818CF8, #C084FC)",
-        history: [{ time: "Created", user: appState.users[appState.currentUserId].name, type: "init", log: "Published to localized database layer." }]
+        imageGradient: "linear-gradient(135deg, #7A8464, #A3967F)",
+        history: [{ time: "Created", user: appState.users[appState.currentUserId].name, type: "init", log: "Published structural database node entry." }]
     };
     
     appState.inventory.push(generatedRecord);
-    adjustKarma(5, "Inventory Contribution Added");
+    adjustKarma(5, "Inventory Entry Contributed");
     
     saveStateToStorage();
     closeAddAssetModal();
@@ -516,15 +504,15 @@ function switchTab(targetId) {
 function toggleNotificationCenter() {
     const activeRequests = appState.inventory.filter(i => i.owner === appState.currentUserId && i.status === 'requested');
     if(activeRequests.length > 0) {
-        triggerToast("System Notification", `You have ${activeRequests.length} pending share request files awaiting your sign-off.`);
+        triggerToast("Alert Notification", `You have ${activeRequests.length} incoming signature borrow requests pending action inputs.`);
     } else {
-        triggerToast("Alerts Clear", "No configuration flags pending action inputs.");
+        triggerToast("Alert System", "No pending transaction flags detected in sync scope.");
     }
 }
 
 function showKarmaDetails() {
     const u = appState.users[appState.currentUserId];
-    triggerToast("Ledger Balance", `${u.name} owns ${u.karma} structural points. Add items (+5), authorize share actions (+5), return pristine (+8).`);
+    triggerToast("Ledger Balance", `${u.name} structural trust ledger contains ${u.karma} system karma assets metrics calculation score.`);
 }
 
 function triggerToast(title, bodyText) {
